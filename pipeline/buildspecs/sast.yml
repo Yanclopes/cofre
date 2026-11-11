@@ -1,0 +1,32 @@
+# SAST: análise estática do código do NestJS e do React com Semgrep.
+# Qualquer achado de severidade ERROR (alta/crítica) faz o comando sair com erro e para a pipeline.
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - pip3 install --quiet "semgrep>=1.90,<2"
+  build:
+    commands:
+      - semgrep --version
+      - >
+        semgrep scan
+        --config p/ci
+        --config p/typescript
+        --config p/react
+        --config p/nodejsscan
+        --config p/jwt
+        --config p/secrets
+        --severity ERROR
+        --error
+        --metrics off
+        --sarif --output semgrep.sarif
+        backend/src frontend/src
+  post_build:
+    commands:
+      # Mostra também os achados de severidade menor, sem bloquear (para o relatório do trabalho).
+      - semgrep scan --config p/ci --config p/typescript --config p/react --metrics off backend/src frontend/src || true
+
+artifacts:
+  files:
+    - semgrep.sarif

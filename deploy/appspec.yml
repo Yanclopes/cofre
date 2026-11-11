@@ -1,0 +1,40 @@
+version: 0.0
+os: linux
+files:
+  - source: app
+    destination: /opt/cofre/app
+file_exists_behavior: OVERWRITE
+permissions:
+  - object: /opt/cofre/app
+    owner: root
+    group: cofre
+    mode: 750
+    type:
+      - directory
+  - object: /opt/cofre/app
+    owner: root
+    group: cofre
+    mode: 640
+    type:
+      - file
+hooks:
+  ApplicationStop:
+    - location: scripts/stop.sh
+      timeout: 60
+      runas: root
+  BeforeInstall:
+    - location: scripts/before_install.sh
+      timeout: 60
+      runas: root
+  AfterInstall:
+    - location: scripts/after_install.sh
+      timeout: 60
+      runas: root
+  ApplicationStart:
+    - location: scripts/start.sh
+      timeout: 60
+      runas: root
+  ValidateService:
+    - location: scripts/validate.sh
+      timeout: 120
+      runas: root

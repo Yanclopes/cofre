@@ -1,0 +1,25 @@
+# Verificação do Terraform antes de qualquer plan:
+#   1. formatação (fmt)  2. sintaxe e tipos (validate)  3. segurança da IaC (Checkov)
+# O Checkov barra, por exemplo, security group aberto para 0.0.0.0/0, bucket sem criptografia,
+# banco público ou CloudTrail sem validação. Falha = pipeline bloqueada.
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - bash pipeline/buildspecs/install-terraform.sh
+      - pip3 install --quiet "checkov>=3.2,<4"
+  build:
+    commands:
+      - terraform -chdir=infra fmt -check -recursive -diff
+      - terraform -chdir=infra init -backend=false -input=false
+      - terraform -chdir=infra validate
+      - terraform -chdir=infra/bootstrap init -backend=false -input=false
+      - terraform -chdir=infra/bootstrap validate
+      - checkov --directory infra --framework terraform --config-file .checkov.yaml --output cli --output junitxml --output-file-path console,checkov-report
+
+reports:
+  checkov:
+    files:
+      - checkov-report/results_junitxml.xml
+    file-format: JUNITXML

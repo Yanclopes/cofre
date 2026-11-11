@@ -1,0 +1,16 @@
+node_modules/
+dist/
+.env
+*.log
+coverage/
+e2e/screenshots/
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+tfplan
+plan.txt
+crash.log
+# os arquivos reais de ambiente SÃO versionados (não têm segredos); só os de máquina local não
+infra/env/*.local.*
+*.tsbuildinfo

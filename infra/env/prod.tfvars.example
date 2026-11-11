@@ -1,0 +1,13 @@
+# Copie para env/prod.tfvars e preencha. Nenhum valor aqui é secreto.
+domain_name       = "cofre.seudominio.com.br"
+hosted_zone_id    = "Z0123456789ABCDEFGHIJ"
+alert_email       = "voce@exemplo.com"
+github_repository = "seu-usuario/cofre"
+github_branch     = "main"
+state_bucket      = "cofre-tfstate-123456789012"
+
+# Laboratório (mais barato): um NAT só, banco sem Multi-AZ, permite destruir.
+# single_nat_gateway     = true
+# db_multi_az            = false
+# db_deletion_protection = false
+# asg_min                = 1

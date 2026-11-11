@@ -1,0 +1,14 @@
+# Banco local para desenvolvimento: docker compose up -d
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: cofre
+      POSTGRES_PASSWORD: cofre
+      POSTGRES_DB: cofre
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - cofre-db:/var/lib/postgresql/data
+volumes:
+  cofre-db:

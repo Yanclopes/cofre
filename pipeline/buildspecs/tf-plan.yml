@@ -1,0 +1,20 @@
+# Gera o plano e o salva como artefato. O apply usa EXATAMENTE este plano, depois da aprovação.
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - bash pipeline/buildspecs/install-terraform.sh
+  build:
+    commands:
+      - cd infra
+      - terraform init -input=false -backend-config=env/backend.hcl
+      - terraform plan -input=false -var-file=env/prod.tfvars -out=tfplan
+      # Resumo legível para o revisor (aparece nos logs deste estágio).
+      - terraform show -no-color tfplan | tee plan.txt
+
+artifacts:
+  files:
+    - infra/tfplan
+    - infra/plan.txt
+    - infra/.terraform.lock.hcl

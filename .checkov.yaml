@@ -1,0 +1,6 @@
+# Configuração do Checkov usada na pipeline (estágio TerraformScan).
+# As exceções ficam no próprio recurso (#checkov:skip=...), cada uma com justificativa.
+framework:
+  - terraform
+compact: true
+skip-download: true

@@ -1,0 +1,14 @@
+# Aplica o plano aprovado. Se a infraestrutura mudou desde o plan, o Terraform recusa ("stale plan").
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - bash pipeline/buildspecs/install-terraform.sh
+  build:
+    commands:
+      - cp "$CODEBUILD_SRC_DIR_plan/infra/tfplan" infra/tfplan
+      - cp "$CODEBUILD_SRC_DIR_plan/infra/.terraform.lock.hcl" infra/.terraform.lock.hcl
+      - cd infra
+      - terraform init -input=false -backend-config=env/backend.hcl
+      - terraform apply -input=false tfplan

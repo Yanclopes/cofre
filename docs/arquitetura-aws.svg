@@ -1,0 +1,243 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1640 1020" role="img" aria-label="Arquitetura AWS com VPC isolada em três camadas, CloudFront com AWS WAF na borda e pipeline DevSecOps com verificações de segurança antes do deploy nas instâncias EC2" font-family="Amazon Ember, Helvetica Neue, Arial, sans-serif">
+<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#232F3E"/></marker><marker id="ahd" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ED7100"/></marker><marker id="aht" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#7B42BC"/></marker></defs>
+<rect x="0" y="0" width="1640" height="1020" fill="#FFFFFF"/>
+<rect x="170" y="20" width="1450" height="980" fill="none" stroke="#232F3E" stroke-width="1.5"/>
+<rect x="170" y="20" width="22" height="22" fill="#232F3E"/>
+<rect x="185" y="95" width="160" height="580" fill="none" stroke="#7D8998" stroke-width="1.5" stroke-dasharray="4 3"/>
+<text x="265.0" y="111" text-anchor="middle" font-size="12.5" fill="#4B5563">Borda global (Edge)</text>
+<rect x="360" y="60" width="1245" height="925" fill="none" stroke="#00A4A6" stroke-width="1.5" stroke-dasharray="6 4"/>
+<rect x="360" y="60" width="22" height="22" fill="#00A4A6"/>
+<rect x="385" y="100" width="880" height="520" fill="none" stroke="#8C4FFF" stroke-width="1.5"/>
+<rect x="385" y="100" width="22" height="22" fill="#8C4FFF"/>
+<rect x="405" y="135" width="420" height="470" fill="none" stroke="#00A4A6" stroke-width="1.5" stroke-dasharray="8 5"/>
+<text x="615.0" y="151" text-anchor="middle" font-size="12.5" fill="#007D80">Availability Zone A</text>
+<rect x="840" y="135" width="405" height="470" fill="none" stroke="#00A4A6" stroke-width="1.5" stroke-dasharray="8 5"/>
+<text x="1042.5" y="151" text-anchor="middle" font-size="12.5" fill="#007D80">Availability Zone B</text>
+<rect x="420" y="165" width="390" height="140" fill="#F2F6E8" stroke="#7AA116" stroke-width="1.5"/>
+<rect x="420" y="165" width="22" height="22" fill="#7AA116"/>
+<rect x="855" y="165" width="375" height="140" fill="#F2F6E8" stroke="#7AA116" stroke-width="1.5"/>
+<rect x="855" y="165" width="22" height="22" fill="#7AA116"/>
+<rect x="420" y="320" width="390" height="135" fill="#E6F6F7" stroke="#00A4A6" stroke-width="1.5"/>
+<rect x="420" y="320" width="22" height="22" fill="#00A4A6"/>
+<rect x="855" y="320" width="375" height="135" fill="#E6F6F7" stroke="#00A4A6" stroke-width="1.5"/>
+<rect x="855" y="320" width="22" height="22" fill="#00A4A6"/>
+<rect x="420" y="470" width="390" height="125" fill="#E6F6F7" stroke="#00A4A6" stroke-width="1.5"/>
+<rect x="420" y="470" width="22" height="22" fill="#00A4A6"/>
+<rect x="855" y="470" width="375" height="125" fill="#E6F6F7" stroke="#00A4A6" stroke-width="1.5"/>
+<rect x="855" y="470" width="22" height="22" fill="#00A4A6"/>
+<rect x="440" y="342" width="700" height="100" fill="none" stroke="#ED7100" stroke-width="1.5" stroke-dasharray="6 4"/>
+<rect x="440" y="342" width="22" height="22" fill="#ED7100"/>
+<rect x="1285" y="100" width="300" height="520" fill="none" stroke="#7D8998" stroke-width="1.5" stroke-dasharray="4 3"/>
+<text x="1435.0" y="116" text-anchor="middle" font-size="12.5" fill="#4B5563">Segurança, governança e monitoramento</text>
+<rect x="385" y="650" width="1200" height="300" fill="#FBF3FC" stroke="#C925D1" stroke-width="1.5"/>
+<rect x="385" y="650" width="22" height="22" fill="#C925D1"/>
+<rect x="800" y="186" width="64" height="60" fill="none" stroke="#DD344C" stroke-width="1.2"/>
+<text x="803" y="183" font-size="10" fill="#DD344C">SG-ALB</text>
+<rect x="600" y="352" width="120" height="78" fill="none" stroke="#DD344C" stroke-width="1.2"/>
+<text x="603" y="349" font-size="10" fill="#DD344C">SG-App</text>
+<rect x="980" y="352" width="120" height="78" fill="none" stroke="#DD344C" stroke-width="1.2"/>
+<text x="983" y="349" font-size="10" fill="#DD344C">SG-App</text>
+<rect x="594" y="500" width="132" height="82" fill="none" stroke="#DD344C" stroke-width="1.2"/>
+<text x="597" y="497" font-size="10" fill="#DD344C">SG-DB</text>
+<rect x="974" y="500" width="132" height="82" fill="none" stroke="#DD344C" stroke-width="1.2"/>
+<text x="977" y="497" font-size="10" fill="#DD344C">SG-DB</text>
+<polyline points="104,315 241,185" fill="none" stroke="#232F3E" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#ah)"/>
+<rect x="151.4" y="229" width="27.200000000000003" height="15" fill="#FFFFFF" opacity="0.9"/>
+<text x="165" y="240" text-anchor="middle" font-size="11" fill="#232F3E" font-style="italic">DNS</text>
+<polyline points="104,330 241,330" fill="none" stroke="#232F3E" stroke-width="1.6" marker-end="url(#ah)"/>
+<rect x="152.0" y="311" width="40.0" height="15" fill="#FFFFFF" opacity="0.9"/>
+<text x="172" y="322" text-anchor="middle" font-size="11" fill="#232F3E" font-style="italic">HTTPS</text>
+<polyline points="265,354 265,446" fill="none" stroke="#232F3E" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#ah)"/>
+<rect x="264.0" y="394" width="72.0" height="15" fill="#FFFFFF" opacity="0.9"/>
+<text x="300" y="405" text-anchor="middle" font-size="11" fill="#232F3E" font-style="italic">inspeciona</text>
+<polyline points="289,330 352,330 352,215 361,215" fill="none" stroke="#232F3E" stroke-width="1.6" marker-end="url(#ah)"/>
+<polyline points="409,215 808,215" fill="none" stroke="#232F3E" stroke-width="1.6" marker-end="url(#ah)"/>
+<rect x="546.4" y="196" width="187.20000000000002" height="15" fill="#FFFFFF" opacity="0.9"/>
+<text x="640" y="207" text-anchor="middle" font-size="11" fill="#232F3E" font-style="italic">origem restrita à CloudFront</text>
+<polyline points="832,239 832,305 660,305 660,356" fill="none" stroke="#232F3E" stroke-width="1.6" marker-end="url(#ah)"/>
+<polyline points="832,305 1040,305 1040,356" fill="none" stroke="#232F3E" stroke-width="1.6" marker-end="url(#ah)"/>
+<polyline points="648,430 648,506" fill="none" stroke="#232F3E" stroke-width="1.6" marker-end="url(#ah)"/>
+<rect x="710.4" y="487" width="59.2" height="15" fill="#FFFFFF" opacity="0.9"/>
+<text x="740" y="498" text-anchor="middle" font-size="11" fill="#232F3E" font-style="italic">SQL 5432</text>
+<polyline points="1040,430 1040,462 672,462 672,506" fill="none" stroke="#232F3E" stroke-width="1.6" marker-end="url(#ah)"/>
+<polyline points="684,530 1016,530" fill="none" stroke="#232F3E" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#ah)"/>
+<rect x="736.4" y="511" width="187.20000000000002" height="15" fill="#FFFFFF" opacity="0.9"/>
+<text x="830" y="522" text-anchor="middle" font-size="11" fill="#232F3E" font-style="italic">replicação síncrona Multi-AZ</text>
+<polyline points="80,640 80,736" fill="none" stroke="#232F3E" stroke-width="1.6" marker-end="url(#ah)"/>
+<rect x="85.4" y="679" width="59.2" height="15" fill="#FFFFFF" opacity="0.9"/>
+<text x="115" y="690" text-anchor="middle" font-size="11" fill="#232F3E" font-style="italic">git push</text>
+<polyline points="104,760 455,760" fill="none" stroke="#232F3E" stroke-width="1.6" marker-end="url(#ah)"/>
+<rect x="223.6" y="741" width="52.800000000000004" height="15" fill="#FFFFFF" opacity="0.9"/>
+<text x="250" y="752" text-anchor="middle" font-size="11" fill="#232F3E" font-style="italic">webhook</text>
+<polyline points="503,760 623,760" fill="none" stroke="#232F3E" stroke-width="1.6" marker-end="url(#ah)"/>
+<polyline points="671,760 791,760" fill="none" stroke="#232F3E" stroke-width="1.6" marker-end="url(#ah)"/>
+<polyline points="839,760 959,760" fill="none" stroke="#232F3E" stroke-width="1.6" marker-end="url(#ah)"/>
+<polyline points="1007,760 1127,760" fill="none" stroke="#232F3E" stroke-width="1.6" marker-end="url(#ah)"/>
+<polyline points="1175,760 1295,760" fill="none" stroke="#232F3E" stroke-width="1.6" marker-end="url(#ah)"/>
+<polyline points="1343,760 1463,760" fill="none" stroke="#232F3E" stroke-width="1.6" marker-end="url(#ah)"/>
+<polyline points="1487,736 1487,640 1255,640 1255,380 1209,380" fill="none" stroke="#ED7100" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#ahd)"/>
+<rect x="1371.2" y="629" width="97.60000000000001" height="15" fill="#FFFFFF" opacity="0.9"/>
+<text x="1420" y="640" text-anchor="middle" font-size="11" fill="#ED7100" font-style="italic">deploy nas EC2</text>
+<polyline points="832,191 832,126 1310,126 1310,160 1334,160" fill="none" stroke="#232F3E" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#ah)"/>
+<rect x="982.4" y="115" width="155.20000000000002" height="15" fill="#FFFFFF" opacity="0.9"/>
+<text x="1060" y="126" text-anchor="middle" font-size="11" fill="#232F3E" font-style="italic">login + MFA (token JWT)</text>
+<polyline points="1319,736 1319,630 1000,630 1000,622" fill="none" stroke="#7B42BC" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#aht)"/>
+<rect x="1020.4" y="619" width="219.20000000000002" height="15" fill="#FFFFFF" opacity="0.9"/>
+<text x="1130" y="630" text-anchor="middle" font-size="11" fill="#7B42BC" font-style="italic">provisiona a infraestrutura (IaC)</text>
+<polyline points="983,838 983,885 1125,885" fill="none" stroke="#232F3E" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#ah)"/>
+<rect x="1011.0" y="867" width="104.0" height="15" fill="#FFFFFF" opacity="0.9"/>
+<text x="1063" y="878" text-anchor="middle" font-size="11" fill="#232F3E" font-style="italic">grava/lê estado</text>
+<polyline points="1319,838 1319,885 1177,885" fill="none" stroke="#232F3E" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#ah)"/>
+<text x="200" y="36" font-size="12.5" font-weight="600" fill="#232F3E" stroke="#FFFFFF" stroke-width="5" paint-order="stroke">AWS Cloud</text>
+<text x="390" y="76" font-size="12.5" font-weight="600" fill="#007D80" stroke="#FFFFFF" stroke-width="5" paint-order="stroke">Região sa-east-1 (São Paulo)</text>
+<text x="415" y="116" font-size="12.5" font-weight="600" fill="#6B3BCC" stroke="#FFFFFF" stroke-width="5" paint-order="stroke">VPC 10.0.0.0/16</text>
+<text x="450" y="181" font-size="12.5" font-weight="600" fill="#4C6B0A" stroke="#F2F6E8" stroke-width="5" paint-order="stroke">Sub-rede pública 10.0.1.0/24</text>
+<text x="885" y="181" font-size="12.5" font-weight="600" fill="#4C6B0A" stroke="#F2F6E8" stroke-width="5" paint-order="stroke">Sub-rede pública 10.0.2.0/24</text>
+<text x="450" y="336" font-size="12.5" font-weight="600" fill="#007D80" stroke="#E6F6F7" stroke-width="5" paint-order="stroke">Sub-rede privada (app) 10.0.11.0/24</text>
+<text x="885" y="336" font-size="12.5" font-weight="600" fill="#007D80" stroke="#E6F6F7" stroke-width="5" paint-order="stroke">Sub-rede privada (app) 10.0.12.0/24</text>
+<text x="450" y="486" font-size="12.5" font-weight="600" fill="#007D80" stroke="#E6F6F7" stroke-width="5" paint-order="stroke">Sub-rede isolada (dados) 10.0.21.0/24</text>
+<text x="885" y="486" font-size="12.5" font-weight="600" fill="#007D80" stroke="#E6F6F7" stroke-width="5" paint-order="stroke">Sub-rede isolada (dados) 10.0.22.0/24</text>
+<text x="470" y="358" font-size="12.5" font-weight="600" fill="#B35500" stroke="#FFFFFF" stroke-width="5" paint-order="stroke">Auto Scaling group</text>
+<text x="415" y="666" font-size="12.5" font-weight="600" fill="#8E1A94" stroke="#FBF3FC" stroke-width="5" paint-order="stroke">CI/CD — AWS CodePipeline com SAST e Terraform</text>
+<circle cx="80" cy="330" r="24.0" fill="#FFFFFF" stroke="#232F3E" stroke-width="2"/>
+<circle cx="80" cy="323" r="7" fill="none" stroke="#232F3E" stroke-width="2"/><path d="M68,344 q12,-18 24,0" fill="none" stroke="#232F3E" stroke-width="2"/>
+<circle cx="91" cy="327" r="5" fill="none" stroke="#232F3E" stroke-width="1.6"/>
+<text x="80" y="368.0" text-anchor="middle" font-size="11.5" fill="#232F3E">Usuários</text>
+<circle cx="80" cy="600" r="24.0" fill="#FFFFFF" stroke="#232F3E" stroke-width="2"/>
+<circle cx="80" cy="593" r="7" fill="none" stroke="#232F3E" stroke-width="2"/><path d="M68,614 q12,-18 24,0" fill="none" stroke="#232F3E" stroke-width="2"/>
+<text x="80" y="638.0" text-anchor="middle" font-size="11.5" fill="#232F3E">Desenvolvedor</text>
+<circle cx="80" cy="760" r="24.0" fill="#FFFFFF" stroke="#232F3E" stroke-width="2"/>
+<text x="80" y="765" text-anchor="middle" font-size="14" font-weight="700" fill="#232F3E">Git</text>
+<text x="80" y="798.0" text-anchor="middle" font-size="11.5" fill="#232F3E">Repositório GitHub</text>
+<rect x="241.0" y="146.0" width="48" height="48" rx="4" fill="#8C4FFF"/>
+<text x="265" y="174.5" text-anchor="middle" font-size="13" font-weight="700" fill="#FFFFFF">R53</text>
+<text x="265" y="208.0" text-anchor="middle" font-size="11.5" fill="#232F3E">Amazon Route 53</text>
+<rect x="241.0" y="306.0" width="48" height="48" rx="4" fill="#8C4FFF"/>
+<text x="265" y="334.5" text-anchor="middle" font-size="13" font-weight="700" fill="#FFFFFF">CF</text>
+<text x="265" y="368.0" text-anchor="middle" font-size="11.5" fill="#232F3E">Amazon CloudFront</text>
+<rect x="241.0" y="446.0" width="48" height="48" rx="4" fill="#DD344C"/>
+<text x="265" y="474.5" text-anchor="middle" font-size="13" font-weight="700" fill="#FFFFFF">WAF</text>
+<text x="265" y="508.0" text-anchor="middle" font-size="11.5" fill="#232F3E">AWS WAF (Web ACL)</text>
+<rect x="241.0" y="576.0" width="48" height="48" rx="4" fill="#DD344C"/>
+<text x="265" y="604.5" text-anchor="middle" font-size="13" font-weight="700" fill="#FFFFFF">SHD</text>
+<text x="265" y="638.0" text-anchor="middle" font-size="11.5" fill="#232F3E">AWS Shield Standard</text>
+<rect x="361.0" y="191.0" width="48" height="48" rx="4" fill="#8C4FFF"/>
+<text x="385" y="219.5" text-anchor="middle" font-size="13" font-weight="700" fill="#FFFFFF">IGW</text>
+<text x="385" y="253.0" text-anchor="middle" font-size="11.5" fill="#232F3E">Internet</text>
+<text x="385" y="266.0" text-anchor="middle" font-size="11.5" fill="#232F3E">Gateway</text>
+<rect x="808.0" y="191.0" width="48" height="48" rx="4" fill="#8C4FFF"/>
+<text x="832" y="219.5" text-anchor="middle" font-size="13" font-weight="700" fill="#FFFFFF">ALB</text>
+<text x="862.0" y="212.5" font-size="11.5" fill="#232F3E">Application</text>
+<text x="862.0" y="225.5" font-size="11.5" fill="#232F3E">Load Balancer</text>
+<rect x="446.0" y="246.0" width="48" height="48" rx="4" fill="#8C4FFF"/>
+<text x="470" y="274.5" text-anchor="middle" font-size="13" font-weight="700" fill="#FFFFFF">NAT</text>
+<text x="500.0" y="274.0" font-size="11.5" fill="#232F3E">NAT Gateway</text>
+<rect x="876.0" y="246.0" width="48" height="48" rx="4" fill="#8C4FFF"/>
+<text x="900" y="274.5" text-anchor="middle" font-size="13" font-weight="700" fill="#FFFFFF">NAT</text>
+<text x="930.0" y="274.0" font-size="11.5" fill="#232F3E">NAT Gateway</text>
+<rect x="636.0" y="356.0" width="48" height="48" rx="4" fill="#ED7100"/>
+<text x="660" y="384.5" text-anchor="middle" font-size="13" font-weight="700" fill="#FFFFFF">EC2</text>
+<text x="660" y="418.0" text-anchor="middle" font-size="11.5" fill="#232F3E">Amazon EC2 (app)</text>
+<rect x="1016.0" y="356.0" width="48" height="48" rx="4" fill="#ED7100"/>
+<text x="1040" y="384.5" text-anchor="middle" font-size="13" font-weight="700" fill="#FFFFFF">EC2</text>
+<text x="1040" y="418.0" text-anchor="middle" font-size="11.5" fill="#232F3E">Amazon EC2 (app)</text>
+<rect x="1161.0" y="356.0" width="48" height="48" rx="4" fill="#8C4FFF"/>
+<text x="1185" y="384.5" text-anchor="middle" font-size="11" font-weight="700" fill="#FFFFFF">VPCE</text>
+<text x="1185" y="418.0" text-anchor="middle" font-size="11.5" fill="#232F3E">VPC Endpoints</text>
+<rect x="636.0" y="506.0" width="48" height="48" rx="4" fill="#C925D1"/>
+<text x="660" y="534.5" text-anchor="middle" font-size="13" font-weight="700" fill="#FFFFFF">RDS</text>
+<text x="660" y="568.0" text-anchor="middle" font-size="11.5" fill="#232F3E">RDS: cofres cifrados</text>
+<rect x="1016.0" y="506.0" width="48" height="48" rx="4" fill="#C925D1"/>
+<text x="1040" y="534.5" text-anchor="middle" font-size="13" font-weight="700" fill="#FFFFFF">RDS</text>
+<text x="1040" y="568.0" text-anchor="middle" font-size="11.5" fill="#232F3E">RDS (standby)</text>
+<rect x="1336.0" y="136.0" width="48" height="48" rx="4" fill="#DD344C"/>
+<text x="1360" y="164.5" text-anchor="middle" font-size="13" font-weight="700" fill="#FFFFFF">COG</text>
+<text x="1360" y="198.0" text-anchor="middle" font-size="11.5" fill="#232F3E">Amazon Cognito (MFA)</text>
+<rect x="1486.0" y="136.0" width="48" height="48" rx="4" fill="#DD344C"/>
+<text x="1510" y="164.5" text-anchor="middle" font-size="13" font-weight="700" fill="#FFFFFF">KMS</text>
+<text x="1510" y="198.0" text-anchor="middle" font-size="11.5" fill="#232F3E">AWS KMS (chave dedicada)</text>
+<rect x="1336.0" y="226.0" width="48" height="48" rx="4" fill="#DD344C"/>
+<text x="1360" y="254.5" text-anchor="middle" font-size="13" font-weight="700" fill="#FFFFFF">SM</text>
+<text x="1360" y="288.0" text-anchor="middle" font-size="11.5" fill="#232F3E">AWS Secrets Manager</text>
+<rect x="1486.0" y="226.0" width="48" height="48" rx="4" fill="#E7157B"/>
+<text x="1510" y="254.5" text-anchor="middle" font-size="13" font-weight="700" fill="#FFFFFF">ORG</text>
+<text x="1510" y="288.0" text-anchor="middle" font-size="11.5" fill="#232F3E">AWS Organizations (SCP)</text>
+<rect x="1336.0" y="316.0" width="48" height="48" rx="4" fill="#E7157B"/>
+<text x="1360" y="344.5" text-anchor="middle" font-size="13" font-weight="700" fill="#FFFFFF">CT</text>
+<text x="1360" y="378.0" text-anchor="middle" font-size="11.5" fill="#232F3E">AWS CloudTrail</text>
+<rect x="1486.0" y="316.0" width="48" height="48" rx="4" fill="#7AA116"/>
+<text x="1510" y="344.5" text-anchor="middle" font-size="13" font-weight="700" fill="#FFFFFF">S3</text>
+<text x="1510" y="378.0" text-anchor="middle" font-size="11.5" fill="#232F3E">S3 Object Lock (auditoria)</text>
+<rect x="1336.0" y="406.0" width="48" height="48" rx="4" fill="#DD344C"/>
+<text x="1360" y="434.5" text-anchor="middle" font-size="13" font-weight="700" fill="#FFFFFF">GD</text>
+<text x="1360" y="468.0" text-anchor="middle" font-size="11.5" fill="#232F3E">Amazon GuardDuty</text>
+<rect x="1486.0" y="406.0" width="48" height="48" rx="4" fill="#DD344C"/>
+<text x="1510" y="434.5" text-anchor="middle" font-size="13" font-weight="700" fill="#FFFFFF">SH</text>
+<text x="1510" y="468.0" text-anchor="middle" font-size="11.5" fill="#232F3E">AWS Security Hub</text>
+<rect x="1336.0" y="496.0" width="48" height="48" rx="4" fill="#E7157B"/>
+<text x="1360" y="524.5" text-anchor="middle" font-size="13" font-weight="700" fill="#FFFFFF">CW</text>
+<text x="1360" y="558.0" text-anchor="middle" font-size="11.5" fill="#232F3E">Amazon CloudWatch</text>
+<rect x="1486.0" y="496.0" width="48" height="48" rx="4" fill="#E7157B"/>
+<text x="1510" y="524.5" text-anchor="middle" font-size="13" font-weight="700" fill="#FFFFFF">SSM</text>
+<text x="1510" y="558.0" text-anchor="middle" font-size="11.5" fill="#232F3E">Systems Manager</text>
+<rect x="455.0" y="736.0" width="48" height="48" rx="4" fill="#C925D1"/>
+<text x="479" y="764.5" text-anchor="middle" font-size="13" font-weight="700" fill="#FFFFFF">CP</text>
+<text x="479" y="798.0" text-anchor="middle" font-size="11.5" fill="#232F3E">Source</text>
+<rect x="623.0" y="736.0" width="48" height="48" rx="4" fill="#C925D1"/>
+<text x="647" y="764.5" text-anchor="middle" font-size="13" font-weight="700" fill="#FFFFFF">CB</text>
+<text x="647" y="798.0" text-anchor="middle" font-size="11.5" fill="#232F3E">SAST</text>
+<rect x="791.0" y="736.0" width="48" height="48" rx="4" fill="#C925D1"/>
+<text x="815" y="764.5" text-anchor="middle" font-size="13" font-weight="700" fill="#FFFFFF">TF</text>
+<text x="815" y="798.0" text-anchor="middle" font-size="11.5" fill="#232F3E">Terraform scan</text>
+<rect x="959.0" y="736.0" width="48" height="48" rx="4" fill="#C925D1"/>
+<text x="983" y="764.5" text-anchor="middle" font-size="13" font-weight="700" fill="#FFFFFF">TF</text>
+<text x="983" y="798.0" text-anchor="middle" font-size="11.5" fill="#232F3E">Terraform plan</text>
+<rect x="1127.0" y="736.0" width="48" height="48" rx="4" fill="#E7157B"/>
+<text x="1151" y="764.5" text-anchor="middle" font-size="13" font-weight="700" fill="#FFFFFF">SNS</text>
+<text x="1151" y="798.0" text-anchor="middle" font-size="11.5" fill="#232F3E">Aprovação manual</text>
+<rect x="1295.0" y="736.0" width="48" height="48" rx="4" fill="#C925D1"/>
+<text x="1319" y="764.5" text-anchor="middle" font-size="13" font-weight="700" fill="#FFFFFF">TF</text>
+<text x="1319" y="798.0" text-anchor="middle" font-size="11.5" fill="#232F3E">Terraform apply</text>
+<rect x="1463.0" y="736.0" width="48" height="48" rx="4" fill="#C925D1"/>
+<text x="1487" y="764.5" text-anchor="middle" font-size="13" font-weight="700" fill="#FFFFFF">CD</text>
+<text x="1487" y="798.0" text-anchor="middle" font-size="11.5" fill="#232F3E">Deploy da aplicação</text>
+<rect x="1127.0" y="861.0" width="48" height="48" rx="4" fill="#7AA116"/>
+<text x="1151" y="889.5" text-anchor="middle" font-size="13" font-weight="700" fill="#FFFFFF">S3</text>
+<text x="1151" y="923.0" text-anchor="middle" font-size="11.5" fill="#232F3E">Estado do Terraform</text>
+<text x="1151" y="936.0" text-anchor="middle" font-size="11.5" fill="#232F3E">(S3 versionado + lock)</text>
+<text x="479" y="816" text-anchor="middle" font-size="10.5" fill="#4B5563">GitHub via</text>
+<text x="479" y="830" text-anchor="middle" font-size="10.5" fill="#4B5563">CodeConnections</text>
+<text x="647" y="816" text-anchor="middle" font-size="10.5" fill="#4B5563">SonarQube / Semgrep</text>
+<text x="647" y="830" text-anchor="middle" font-size="10.5" fill="#4B5563">no código da app</text>
+<text x="815" y="816" text-anchor="middle" font-size="10.5" fill="#4B5563">fmt + validate</text>
+<text x="815" y="830" text-anchor="middle" font-size="10.5" fill="#4B5563">+ Checkov / tfsec</text>
+<text x="983" y="816" text-anchor="middle" font-size="10.5" fill="#4B5563">plan salvo como</text>
+<text x="983" y="830" text-anchor="middle" font-size="10.5" fill="#4B5563">artefato (S3 + KMS)</text>
+<text x="1151" y="816" text-anchor="middle" font-size="10.5" fill="#4B5563">Notificação SNS;</text>
+<text x="1151" y="830" text-anchor="middle" font-size="10.5" fill="#4B5563">revisor lê o plan</text>
+<text x="1319" y="816" text-anchor="middle" font-size="10.5" fill="#4B5563">aplica VPC, sub-redes,</text>
+<text x="1319" y="830" text-anchor="middle" font-size="10.5" fill="#4B5563">SGs, NACLs, ALB, WAF</text>
+<text x="1487" y="816" text-anchor="middle" font-size="10.5" fill="#4B5563">CodeDeploy, 1 EC2</text>
+<text x="1487" y="830" text-anchor="middle" font-size="10.5" fill="#4B5563">por vez + rollback</text>
+<rect x="577" y="850" width="308" height="46" rx="4" fill="#FDECEE" stroke="#DD344C" stroke-dasharray="5 3"/>
+<text x="731.0" y="869" text-anchor="middle" font-size="11.5" font-weight="700" fill="#B3192E">Quality gate de segurança</text>
+<text x="731.0" y="886" text-anchor="middle" font-size="10.5" fill="#B3192E">achado crítico/alto → pipeline bloqueada</text>
+<text x="1435" y="600" text-anchor="middle" font-size="10.5" fill="#4B5563">Logs imutáveis: CloudTrail, WAF, ALB e Flow Logs</text>
+<rect x="14" y="392" width="146" height="112" rx="6" fill="#FDECEE" stroke="#DD344C" stroke-dasharray="5 3"/>
+<text x="87" y="412" text-anchor="middle" font-size="11.5" font-weight="700" fill="#B3192E">Cifra no navegador</text>
+<text x="87" y="431" text-anchor="middle" font-size="10.5" font-weight="400" fill="#B3192E">Argon2id (senha mestra)</text>
+<text x="87" y="450" text-anchor="middle" font-size="10.5" font-weight="400" fill="#B3192E">AES-256-GCM por item</text>
+<text x="87" y="469" text-anchor="middle" font-size="10.5" font-weight="400" fill="#B3192E">Servidor só recebe</text>
+<text x="87" y="488" text-anchor="middle" font-size="10.5" font-weight="400" fill="#B3192E">dado cifrado</text>
+<circle cx="26" cy="392" r="11" fill="#232F3E"/><text x="26" y="396.5" text-anchor="middle" font-size="12.5" font-weight="700" fill="#FFFFFF">1</text>
+<circle cx="150" cy="290" r="11" fill="#232F3E"/><text x="150" y="294.5" text-anchor="middle" font-size="12.5" font-weight="700" fill="#FFFFFF">2</text>
+<circle cx="215" cy="400" r="11" fill="#232F3E"/><text x="215" y="404.5" text-anchor="middle" font-size="12.5" font-weight="700" fill="#FFFFFF">3</text>
+<circle cx="720" cy="240" r="11" fill="#232F3E"/><text x="720" y="244.5" text-anchor="middle" font-size="12.5" font-weight="700" fill="#FFFFFF">4</text>
+<circle cx="575" cy="530" r="11" fill="#232F3E"/><text x="575" y="534.5" text-anchor="middle" font-size="12.5" font-weight="700" fill="#FFFFFF">5</text>
+<circle cx="1185" cy="330" r="11" fill="#232F3E"/><text x="1185" y="334.5" text-anchor="middle" font-size="12.5" font-weight="700" fill="#FFFFFF">6</text>
+<circle cx="50" cy="690" r="11" fill="#232F3E"/><text x="50" y="694.5" text-anchor="middle" font-size="12.5" font-weight="700" fill="#FFFFFF">7</text>
+<circle cx="647" cy="700" r="11" fill="#232F3E"/><text x="647" y="704.5" text-anchor="middle" font-size="12.5" font-weight="700" fill="#FFFFFF">8</text>
+<circle cx="983" cy="700" r="11" fill="#232F3E"/><text x="983" y="704.5" text-anchor="middle" font-size="12.5" font-weight="700" fill="#FFFFFF">9</text>
+<circle cx="1487" cy="700" r="11" fill="#232F3E"/><text x="1487" y="704.5" text-anchor="middle" font-size="12.5" font-weight="700" fill="#FFFFFF">10</text>
+<circle cx="1300" cy="600" r="11" fill="#232F3E"/><text x="1300" y="604.5" text-anchor="middle" font-size="12.5" font-weight="700" fill="#FFFFFF">11</text>
+</svg>

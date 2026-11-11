@@ -1,0 +1,70 @@
+#!/bin/bash
+# Preparação da EC2 (Amazon Linux 2023). O código da aplicação chega depois, pelo CodeDeploy.
+set -euo pipefail
+exec > >(tee /var/log/user-data.log) 2>&1
+
+REGION="${region}"
+NODE_VERSION="${node_version}"
+
+dnf -y update --security
+dnf -y install ruby wget tar xz amazon-cloudwatch-agent
+
+# ---------------------------------------------------------------- Node.js (verificado por SHA-256)
+cd /tmp
+NODE_PKG="node-v$NODE_VERSION-linux-x64"
+curl -fsSLO "https://nodejs.org/dist/v$NODE_VERSION/$NODE_PKG.tar.xz"
+curl -fsSLO "https://nodejs.org/dist/v$NODE_VERSION/SHASUMS256.txt"
+grep " $NODE_PKG.tar.xz\$" SHASUMS256.txt | sha256sum -c -
+mkdir -p /opt/node
+tar -xJf "$NODE_PKG.tar.xz" -C /opt/node --strip-components=1
+ln -sf /opt/node/bin/node /usr/local/bin/node
+
+# ---------------------------------------------------------------- agente do CodeDeploy
+curl -fsSL "https://aws-codedeploy-$REGION.s3.$REGION.amazonaws.com/latest/install" -o /tmp/codedeploy-install
+chmod +x /tmp/codedeploy-install
+/tmp/codedeploy-install auto
+systemctl enable --now codedeploy-agent
+
+# ---------------------------------------------------------------- usuário de serviço sem shell
+useradd --system --no-create-home --shell /sbin/nologin cofre || true
+install -d -o cofre -g cofre -m 750 /opt/cofre /var/log/cofre
+install -d -o root -g cofre -m 750 /etc/cofre
+
+# Certificados da AWS para validar o TLS do RDS.
+curl -fsSL "https://truststore.pki.rds.amazonaws.com/$REGION/$REGION-bundle.pem" -o /etc/cofre/rds-ca.pem
+chmod 644 /etc/cofre/rds-ca.pem
+
+# Configuração (nenhum segredo aqui: a senha do banco é lida do Secrets Manager em tempo de execução).
+cat > /etc/cofre/cofre.env <<EOF
+NODE_ENV=production
+PORT=${app_port}
+AWS_REGION=$REGION
+AUTH_MODE=cognito
+COGNITO_USER_POOL_ID=${user_pool_id}
+COGNITO_CLIENT_ID=${client_id}
+DB_HOST=${db_host}
+DB_PORT=5432
+DB_NAME=cofre
+DB_SECRET_ARN=${db_secret_arn}
+DB_CA_PATH=/etc/cofre/rds-ca.pem
+FRONTEND_DIR=/opt/cofre/app/backend/public
+EOF
+chown root:cofre /etc/cofre/cofre.env
+chmod 640 /etc/cofre/cofre.env
+
+# ---------------------------------------------------------------- logs para o CloudWatch
+cat > /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json <<'EOF'
+{
+  "logs": {
+    "logs_collected": {
+      "files": {
+        "collect_list": [
+          { "file_path": "/var/log/cofre/app.log", "log_group_name": "${log_group_name}", "log_stream_name": "{instance_id}" }
+        ]
+      }
+    }
+  }
+}
+EOF
+/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -s \
+  -c file:/opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json

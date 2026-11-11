@@ -1,0 +1,29 @@
+# Testa e compila o NestJS e o React e monta o pacote que o CodeDeploy publica nas EC2.
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 22
+  pre_build:
+    commands:
+      - cd backend && npm ci && cd ..
+      - cd frontend && npm ci && cd ..
+  build:
+    commands:
+      - cd backend && npm test && npm run build && cd ..
+      - cd frontend && npm test && npm run build && cd ..
+  post_build:
+    commands:
+      # Pacote: appspec + scripts + app/backend (dist, dependências de produção) + front em app/backend/public
+      - cd backend && npm prune --omit=dev && cd ..
+      - mkdir -p bundle/app/backend
+      - cp -r deploy/appspec.yml deploy/scripts bundle/
+      - cp -r backend/dist backend/node_modules backend/package.json bundle/app/backend/
+      - cp -r frontend/dist bundle/app/backend/public
+      - ls -la bundle bundle/app/backend
+
+artifacts:
+  base-directory: bundle
+  files:
+    - '**/*'
