@@ -58,6 +58,7 @@ userKey = 256 bits aleatórios, gerada no navegador no cadastro
 | Pipeline: Source → **SAST** + **Terraform scan** → plan → aprovação → apply → build → deploy | `infra/pipeline.tf`, `pipeline/buildspecs/` |
 | Deploy nas EC2 (CodeDeploy, uma instância por vez, rollback automático) | `deploy/` |
 | Diagrama da arquitetura (PNG, SVG e draw.io editável) | `docs/` |
+| Documentação de arquitetura, rede, WAF, pipeline e specs de segurança (SDD) | [`docs/README.md`](docs/README.md) |
 
 ---
 
@@ -112,7 +113,7 @@ Pré-requisitos: conta AWS, um domínio com hosted zone no Route 53, Terraform �
    Faça commit do `infra/.terraform.lock.hcl` gerado.
 4. **Ative a conexão com o GitHub**: Console → Developer Tools → Settings → Connections → conexão `cofre-prod-github` → *Update pending connection*.
 5. **Confirme a assinatura** do e-mail de alertas (SNS).
-6. A partir daqui, todo `git push` na branch `main` roda a pipeline. A aprovação manual chega por e-mail.
+6. A partir daqui, todo `git push` na branch configurada em `github_branch` (neste repositório, `master`) roda a pipeline. A aprovação manual chega por e-mail.
 
 ### Pipeline
 | Estágio | O que faz | Bloqueia quando |
