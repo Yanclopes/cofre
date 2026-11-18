@@ -160,6 +160,32 @@ variable "terraform_version" {
   default     = "1.10.5"
 }
 
+variable "enable_sonarcloud" {
+  description = "Adiciona o SonarCloud ao estágio Seguranca, em paralelo ao Semgrep. Gratuito só para repositório público."
+  type        = bool
+  default     = true
+}
+
+variable "sonar_organization" {
+  description = "Chave da organização no SonarCloud (normalmente o usuário do GitHub)."
+  type        = string
+  default     = ""
+  validation {
+    condition     = !var.enable_sonarcloud || var.sonar_organization != ""
+    error_message = "Defina sonar_organization ou use enable_sonarcloud = false."
+  }
+}
+
+variable "sonar_project_key" {
+  description = "Chave do projeto no SonarCloud (ex.: usuario_cofre)."
+  type        = string
+  default     = ""
+  validation {
+    condition     = !var.enable_sonarcloud || var.sonar_project_key != ""
+    error_message = "Defina sonar_project_key ou use enable_sonarcloud = false."
+  }
+}
+
 # ------------------------------------------------------------------ organização (opcional)
 variable "enable_scp" {
   description = "Cria a SCP de proteção. Só funciona se o Terraform rodar na conta de gerenciamento do AWS Organizations."

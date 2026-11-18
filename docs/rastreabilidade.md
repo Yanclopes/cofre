@@ -2,7 +2,7 @@
 
 | Requisito do enunciado | Como é atendido | Evidência | Pendência |
 |---|---|---|---|
-| Código no GitHub com SAST | Semgrep bloqueia achados ERROR; Checkov analisa a IaC | `pipeline/buildspecs/sast.yml`, `tf-scan.yml`, [pipeline-devsecops.md](pipeline-devsecops.md) | Avaliar SonarCloud se SonarQube for exigido |
+| Código no GitHub com SAST | Semgrep e SonarCloud (SonarQube em nuvem) bloqueiam achados altos/críticos; Checkov analisa a IaC | `pipeline/buildspecs/sast.yml`, `sonar.yml`, `tf-scan.yml`, [pipeline-devsecops.md](pipeline-devsecops.md) | Criar o projeto no SonarCloud e gravar o token no SSM |
 | Desenvolvimento seguro (SDD) | Specs com `SEC-xx`, STRIDE e critérios de aceite ligados a testes | [specs/](specs/README.md) | — |
 | Infraestrutura com Terraform | Toda a AWS em `infra/`; estado remoto cifrado; plan/apply só pela pipeline | `infra/`, `infra/bootstrap/` | Executar `terraform plan` numa conta real |
 | WAF em camada 7 | Web ACL na CloudFront e no Cognito; origem fechada | `infra/cdn_waf.tf`, `infra/cognito.tf`, `infra/alb.tf`, [waf.md](waf.md) | — |

@@ -54,8 +54,10 @@ flowchart LR
     DEV([Desenvolvedor]) -->|git push| GH[GitHub]
     GH -->|CodeConnections| SRC[Source]
     SRC --> SAST[SAST<br/>Semgrep]
+    SRC --> SQ[SAST<br/>SonarCloud]
     SRC --> TFS[Terraform scan<br/>fmt + validate + Checkov]
     SAST --> PLAN[Terraform plan<br/>papel só leitura]
+    SQ --> PLAN
     TFS --> PLAN
     PLAN --> APR{Aprovação manual<br/>SNS / e-mail}
     APR --> APPLY[Terraform apply<br/>mesmo plano]
@@ -105,5 +107,6 @@ O servidor recebe apenas strings `v1.<iv>.<texto cifrado>` e recusa qualquer out
 
 ## Divergências conhecidas no diagrama
 
-- O estágio SAST cita "SonarQube / Semgrep" e o scan cita "Checkov / tfsec": o código usa **Semgrep** e **Checkov**.
+- O estágio SAST cita "SonarQube / Semgrep": o código usa **Semgrep** e **SonarCloud** (o SonarQube em nuvem), em paralelo.
+- O scan da IaC cita "Checkov / tfsec": o código usa só o **Checkov**.
 - O diagrama mostra uma chave KMS; o Terraform cria duas (`data` e `ops`).

@@ -6,6 +6,11 @@ github_repository = "seu-usuario/cofre"
 github_branch     = "master" # branch padrão deste repositório
 state_bucket      = "cofre-tfstate-123456789012"
 
+# SonarCloud (gratuito para repositório público). O token vai no SSM, nunca aqui (ver README).
+sonar_organization = "seu-usuario"
+sonar_project_key  = "seu-usuario_cofre"
+# enable_sonarcloud = false # desliga o estágio
+
 # Laboratório (mais barato): um NAT só, banco sem Multi-AZ, permite destruir.
 # single_nat_gateway     = true
 # db_multi_az            = false
