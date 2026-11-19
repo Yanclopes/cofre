@@ -180,14 +180,63 @@ resource "aws_iam_role_policy_attachment" "tf_apply_admin" {
   policy_arn = "arn:${local.partition}:iam::aws:policy/AdministratorAccess"
 }
 
+# ---------------------------------------------------------------- SonarCloud (SAST complementar)
+# O token é gravado fora do Terraform; o estado guarda só o valor provisório:
+#   aws ssm put-parameter --name /cofre-prod/sonarcloud-token --type SecureString \
+#     --key-id alias/cofre-prod-ops --overwrite --value <token>
+# SSM em vez de Secrets Manager: leitura de segredo fora da EC2 dispara alarme em monitoring.tf.
+resource "aws_ssm_parameter" "sonar_token" {
+  count       = var.enable_sonarcloud ? 1 : 0
+  name        = "/${local.name}/sonarcloud-token"
+  description = "Token de analise do SonarCloud usado pelo CodeBuild"
+  type        = "SecureString"
+  key_id      = aws_kms_key.ops.arn
+  value       = "defina-com-aws-ssm-put-parameter"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+}
+
+# Papel próprio: o mesmo do build, mais a leitura desse único parâmetro.
+resource "aws_iam_role" "sonar" {
+  count              = var.enable_sonarcloud ? 1 : 0
+  name               = "${local.name}-sonar"
+  assume_role_policy = data.aws_iam_policy_document.codebuild_assume.json
+}
+
+resource "aws_iam_role_policy" "sonar" {
+  count = var.enable_sonarcloud ? 1 : 0
+  role  = aws_iam_role.sonar[0].id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = concat(local.build_base_statements, [{
+      Effect   = "Allow"
+      Action   = ["ssm:GetParameters"]
+      Resource = aws_ssm_parameter.sonar_token[0].arn
+    }])
+  })
+}
+
 # ---------------------------------------------------------------- projetos CodeBuild
 locals {
-  codebuild_projects = {
+  all_codebuild_projects = {
     sast     = { role = aws_iam_role.build.arn, buildspec = "pipeline/buildspecs/sast.yml", description = "SAST com Semgrep no codigo da aplicacao" }
+    sonar    = { role = one(aws_iam_role.sonar[*].arn), buildspec = "pipeline/buildspecs/sonar.yml", description = "SAST com SonarCloud no codigo da aplicacao" }
     tf-scan  = { role = aws_iam_role.build.arn, buildspec = "pipeline/buildspecs/tf-scan.yml", description = "terraform fmt/validate + Checkov" }
     tf-plan  = { role = aws_iam_role.tf_plan.arn, buildspec = "pipeline/buildspecs/tf-plan.yml", description = "terraform plan" }
     tf-apply = { role = aws_iam_role.tf_apply.arn, buildspec = "pipeline/buildspecs/tf-apply.yml", description = "terraform apply do plano aprovado" }
     build    = { role = aws_iam_role.build.arn, buildspec = "pipeline/buildspecs/build.yml", description = "Testes e build do NestJS e do React" }
+  }
+  codebuild_projects = { for k, v in local.all_codebuild_projects : k => v if k != "sonar" || var.enable_sonarcloud }
+
+  # Variáveis extras por projeto (além de TF_VERSION, comum a todos).
+  codebuild_extra_env = {
+    sonar = [
+      { name = "SONAR_ORGANIZATION", value = var.sonar_organization, type = "PLAINTEXT" },
+      { name = "SONAR_PROJECT_KEY", value = var.sonar_project_key, type = "PLAINTEXT" },
+      { name = "SONAR_TOKEN", value = coalesce(one(aws_ssm_parameter.sonar_token[*].name), "-"), type = "PARAMETER_STORE" },
+    ]
   }
 }
 
@@ -212,6 +261,15 @@ resource "aws_codebuild_project" "jobs" {
     environment_variable {
       name  = "TF_VERSION"
       value = var.terraform_version
+    }
+
+    dynamic "environment_variable" {
+      for_each = lookup(local.codebuild_extra_env, each.key, [])
+      content {
+        name  = environment_variable.value.name
+        value = environment_variable.value.value
+        type  = environment_variable.value.type
+      }
     }
   }
 
@@ -360,7 +418,7 @@ resource "aws_codepipeline" "main" {
     }
   }
 
-  # Quality gate: os dois rodam em paralelo; qualquer achado crítico/alto para a pipeline aqui.
+  # Quality gate: as ações rodam em paralelo; qualquer achado crítico/alto para a pipeline aqui.
   stage {
     name = "Seguranca"
     action {
@@ -371,6 +429,18 @@ resource "aws_codepipeline" "main" {
       version         = "1"
       input_artifacts = ["source"]
       configuration   = { ProjectName = aws_codebuild_project.jobs["sast"].name }
+    }
+    dynamic "action" {
+      for_each = var.enable_sonarcloud ? [1] : []
+      content {
+        name            = "SonarCloud"
+        category        = "Test"
+        owner           = "AWS"
+        provider        = "CodeBuild"
+        version         = "1"
+        input_artifacts = ["source"]
+        configuration   = { ProjectName = aws_codebuild_project.jobs["sonar"].name }
+      }
     }
     action {
       name            = "TerraformScan"

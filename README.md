@@ -58,6 +58,7 @@ userKey = 256 bits aleatórios, gerada no navegador no cadastro
 | Pipeline: Source → **SAST** + **Terraform scan** → plan → aprovação → apply → build → deploy | `infra/pipeline.tf`, `pipeline/buildspecs/` |
 | Deploy nas EC2 (CodeDeploy, uma instância por vez, rollback automático) | `deploy/` |
 | Diagrama da arquitetura (PNG, SVG e draw.io editável) | `docs/` |
+| Documentação de arquitetura, rede, WAF, pipeline e specs de segurança (SDD) | [`docs/README.md`](docs/README.md) |
 
 ---
 
@@ -112,13 +113,17 @@ Pré-requisitos: conta AWS, um domínio com hosted zone no Route 53, Terraform �
    Faça commit do `infra/.terraform.lock.hcl` gerado.
 4. **Ative a conexão com o GitHub**: Console → Developer Tools → Settings → Connections → conexão `cofre-prod-github` → *Update pending connection*.
 5. **Confirme a assinatura** do e-mail de alertas (SNS).
-6. A partir daqui, todo `git push` na branch `main` roda a pipeline. A aprovação manual chega por e-mail.
+6. **SonarCloud**: desligue a *Automatic Analysis* no projeto do SonarCloud e grave o token no SSM:
+   `aws ssm put-parameter --name /cofre-prod/sonarcloud-token --type SecureString --key-id alias/cofre-prod-ops --overwrite --value <token>`.
+   Passo a passo em [docs/pipeline-devsecops.md](docs/pipeline-devsecops.md). Para não usar, `enable_sonarcloud = false`.
+7. A partir daqui, todo `git push` na branch configurada em `github_branch` (neste repositório, `master`) roda a pipeline. A aprovação manual chega por e-mail.
 
 ### Pipeline
 | Estágio | O que faz | Bloqueia quando |
 |---|---|---|
 | Source | Lê o GitHub via CodeConnections | — |
 | Seguranca / SAST | Semgrep (`p/ci`, `p/typescript`, `p/react`, `p/nodejsscan`, `p/jwt`, `p/secrets`) | achado de severidade ERROR |
+| Seguranca / SonarCloud | SonarScanner + consulta à API do SonarCloud | vulnerabilidade BLOCKER ou CRITICAL aberta |
 | Seguranca / TerraformScan | `terraform fmt -check`, `validate`, **Checkov** | qualquer verificação reprovada |
 | TerraformPlan | `terraform plan -out=tfplan` (papel só leitura) | erro no plan |
 | Aprovacao | Revisor lê o plan e aprova | rejeição |
@@ -140,6 +145,7 @@ opções comentadas em `prod.tfvars.example` (um NAT, banco sem Multi-AZ, 1 inst
 - **SAST** (Semgrep, regras TypeScript/JavaScript/segredos): 0 achados bloqueantes.
 - **Checkov** no Terraform: 360 verificações aprovadas, 0 reprovadas. As exceções estão justificadas no próprio recurso (`#checkov:skip=...`).
 - Formatação HCL conferida com o formatador oficial (`hclwrite`); argumentos conferidos contra a documentação do provider AWS 5.95.
+- **SonarCloud**: estágio configurado, mas ainda não executado (depende do projeto criado no SonarCloud e do token no SSM).
 - **Não executado aqui:** `terraform validate`/`plan`/`apply` contra uma conta AWS real. O estágio TerraformScan da pipeline roda o `validate`.
 
 ## 6. Próximos passos possíveis
