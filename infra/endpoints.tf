@@ -9,10 +9,15 @@ resource "aws_vpc_endpoint" "s3" {
 }
 
 locals {
-  interface_endpoints = [
-    "ssm",                        # Session Manager (acesso administrativo sem SSH)
-    "ssmmessages",                # Session Manager
-    "ec2messages",                # Session Manager
+  # Sem substituto: o Session Manager é o único acesso administrativo (não há SSH).
+  endpoints_essenciais = [
+    "ssm",         # Session Manager (acesso administrativo sem SSH)
+    "ssmmessages", # Session Manager
+    "ec2messages", # Session Manager
+  ]
+
+  # Privacidade do tráfego, mas com alternativa pelo NAT quando o custo aperta.
+  endpoints_opcionais = [
     "secretsmanager",             # senha do banco
     "kms",                        # decifrar o segredo
     "logs",                       # CloudWatch Logs
@@ -20,6 +25,8 @@ locals {
     "codedeploy",                 # agente do CodeDeploy
     "codedeploy-commands-secure", # agente do CodeDeploy
   ]
+
+  interface_endpoints = var.minimal_vpc_endpoints ? local.endpoints_essenciais : concat(local.endpoints_essenciais, local.endpoints_opcionais)
 }
 
 resource "aws_vpc_endpoint" "interface" {

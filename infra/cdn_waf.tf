@@ -147,7 +147,7 @@ resource "aws_cloudfront_distribution" "main" {
   http_version        = "http2and3"
   comment             = "${local.name} - gerenciador de senhas"
   aliases             = [var.domain_name]
-  price_class         = "PriceClass_All" # inclui pontos de presença na América do Sul
+  price_class         = "PriceClass_All" # inclui pontos de presença na América do Sul, perto do usuário
   web_acl_id          = aws_wafv2_web_acl.cdn.arn
 
   origin {

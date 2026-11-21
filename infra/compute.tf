@@ -1,8 +1,28 @@
 # EC2 da aplicação (NestJS + build do React) em Auto Scaling nas sub-redes privadas.
 # Sem IP público, sem par de chaves SSH: acesso administrativo só pelo Session Manager.
 
-data "aws_ssm_parameter" "al2023" {
-  name = "/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64"
+# A AMI vem da API do EC2, e não do parâmetro público do SSM: o caminho
+# /aws/service/ami-amazon-linux-latest não responde nesta conta (ParameterNotFound,
+# inclusive para o Amazon Linux 2). O filtro pega sempre a imagem mais recente do
+# Amazon Linux 2023 publicada pela própria AWS, no kernel 6.1 (o padrão da distribuição).
+data "aws_ami" "al2023" {
+  most_recent = true
+  owners      = ["amazon"]
+
+  filter {
+    name   = "name"
+    values = ["al2023-ami-2023.*-kernel-6.1-x86_64"]
+  }
+
+  filter {
+    name   = "state"
+    values = ["available"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
 }
 
 # ---------------------------------------------------------------- IAM (menor privilégio)
@@ -78,7 +98,7 @@ resource "aws_cloudwatch_log_group" "app" {
 # ---------------------------------------------------------------- launch template
 resource "aws_launch_template" "app" {
   name_prefix            = "${local.name}-app-"
-  image_id               = data.aws_ssm_parameter.al2023.value
+  image_id               = data.aws_ami.al2023.id
   instance_type          = var.instance_type
   vpc_security_group_ids = [aws_security_group.app.id]
 

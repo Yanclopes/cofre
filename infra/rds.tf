@@ -71,7 +71,7 @@ resource "aws_db_instance" "main" {
   ca_cert_identifier     = "rds-ca-rsa2048-g1"
 
   iam_database_authentication_enabled = true
-  backup_retention_period             = 7
+  backup_retention_period             = var.db_backup_retention_days
   copy_tags_to_snapshot               = true
   deletion_protection                 = var.db_deletion_protection
   skip_final_snapshot                 = false
