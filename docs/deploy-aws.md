@@ -268,9 +268,10 @@ guarda o histórico. Apague-o à mão se quiser zerar tudo.
 | Apply parado em `aws_acm_certificate_validation` | Os CNAMEs de validação não resolvem. Confira se a zona na Cloudflare é a do `cloudflare_zone_id` e se os nameservers dela estão ativos no registrador. |
 | Site responde mas bloqueia todo acesso (403 do WAF) | Registro ficou *proxied* na Cloudflare. Mude para *DNS only* — ver a nota do passo 1. |
 | `state snapshot was created by Terraform vX` | `terraform_version` no tfvars menor que a versão do primeiro apply. Já fixado em `1.14.9`. |
+| `ParameterNotFound` ao consultar o SSM pela linha de comando | Se estiver no Git Bash do Windows, ele converte argumentos iniciados com `/` em caminho do Windows e o nome chega corrompido. Use `MSYS_NO_PATHCONV=1` antes do comando. |
+| `Access denied when attempting to assume role AWSServiceRoleForAutoScaling` | A service-linked role acabou de ser criada e ainda não propagou. Rode o apply de novo. |
 | `FreeTierRestrictionError` no RDS | A conta está no plano gratuito, que limita a retenção de backup. O `prod.tfvars` usa `db_backup_retention_days = 1`; o default do projeto (7) é recusado. |
 | `VcpuLimitExceeded` | Improvável: a quota em us-east-2 é de 64 vCPUs (conferida). Em outras regiões da conta é 5. |
-| `ParameterNotFound` em `/aws/service/ami-amazon-linux-latest/...` | Era o defeito corrigido em 21/11/2026 — a AMI agora vem de `data "aws_ami"` via `ec2:DescribeImages`. Se reaparecer, alguém reverteu `infra/compute.tf`. |
 | Pipeline para em `Source` | Conexão do GitHub ainda *pending* (passo 6). |
 | `Seguranca/SonarCloud` falha | Token não gravado no SSM (passo 7.2). |
 | Health check do ALB falhando | Veja o log da instância com `aws logs tail /cofre-prod/app --region us-east-2`. O acesso à instância é por Session Manager (`aws ssm start-session --target ID`), sem SSH. |

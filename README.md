@@ -167,11 +167,11 @@ em modo `COMPLIANCE` os logs ficam retidos até o fim do prazo, e isso é intenc
 - **SonarCloud**: estágio configurado, mas ainda não executado (depende do projeto criado no SonarCloud e do token no SSM).
 - `terraform validate` e `terraform fmt -check -recursive`: aprovados em `infra/` e em `infra/bootstrap/`
   (Terraform 1.14.9, provider aws 5.100.0).
-- `terraform plan` contra a conta AWS real: **149 recursos propostos, 0 erros**, com
-  `region = us-east-2` (ver seção 4). O plan destravou um defeito que estava encoberto: a AMI
-  era buscada em `/aws/service/ami-amazon-linux-latest/...`, caminho que responde
-  `ParameterNotFound` nesta conta; passou a vir de `data "aws_ami"` via `ec2:DescribeImages`.
-- **Não executado aqui:** `terraform apply`. Nada foi criado na AWS.
+- `terraform apply` contra a conta AWS real: **156 recursos criados** em `us-east-2`
+  (21/11/2026). O domínio responde por HTTPS com certificado do ACM validado via Cloudflare,
+  e a EC2 sobe registrada no Session Manager, sem SSH.
+- Três limites do ambiente apareceram no apply e estão contornados no `prod.tfvars`: a região
+  (SCP), GuardDuty e Security Hub (SCP) e a retenção de backup do RDS (plano gratuito).
 
 ## 6. Próximos passos possíveis
 - Acesso de emergência (contato de confiança com prazo de espera), compartilhamento de itens entre usuários com chaves públicas (X25519).
