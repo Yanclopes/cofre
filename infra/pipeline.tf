@@ -164,8 +164,16 @@ resource "aws_iam_role_policy_attachment" "tf_plan_readonly" {
 }
 
 resource "aws_iam_role_policy" "tf_plan" {
-  role   = aws_iam_role.tf_plan.id
-  policy = jsonencode({ Version = "2012-10-17", Statement = concat(local.build_base_statements, local.state_statements) })
+  role = aws_iam_role.tf_plan.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = concat(local.build_base_statements, local.state_statements, [{
+      Sid      = "TokenDnsSomenteLeitura"
+      Effect   = "Allow"
+      Action   = ["ssm:GetParameters"]
+      Resource = aws_ssm_parameter.cloudflare_token["ro"].arn
+    }])
+  })
 }
 
 # Papel do terraform apply: o único que altera a infraestrutura. Só roda depois da aprovação manual.
@@ -218,6 +226,32 @@ resource "aws_iam_role_policy" "sonar" {
   })
 }
 
+# ---------------------------------------------------------------- Cloudflare (DNS do domínio)
+# O DNS do domínio é autoritativo na Cloudflare, então os estágios de Terraform precisam de
+# um token dela. São dois, para preservar a separação de papéis da pipeline: o plan recebe
+# um token somente de leitura (Zone:DNS:Read) e só o apply recebe o que escreve
+# (Zone:DNS:Edit). Como os tokens do SonarCloud, os valores são gravados fora do Terraform:
+#   aws ssm put-parameter --name /cofre-prod/cloudflare-token-ro --type SecureString #     --key-id alias/cofre-prod-ops --overwrite --value <token>
+locals {
+  cloudflare_tokens = {
+    ro = "somente leitura, usado pelo terraform plan"
+    rw = "com escrita de DNS, usado pelo terraform apply"
+  }
+}
+
+resource "aws_ssm_parameter" "cloudflare_token" {
+  for_each    = local.cloudflare_tokens
+  name        = "/${local.name}/cloudflare-token-${each.key}"
+  description = "Token da API da Cloudflare ${each.value}"
+  type        = "SecureString"
+  key_id      = aws_kms_key.ops.arn
+  value       = "defina-com-aws-ssm-put-parameter"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+}
+
 # ---------------------------------------------------------------- projetos CodeBuild
 locals {
   all_codebuild_projects = {
@@ -232,6 +266,12 @@ locals {
 
   # Variáveis extras por projeto (além de TF_VERSION, comum a todos).
   codebuild_extra_env = {
+    tf-plan = [
+      { name = "CLOUDFLARE_API_TOKEN", value = aws_ssm_parameter.cloudflare_token["ro"].name, type = "PARAMETER_STORE" },
+    ]
+    tf-apply = [
+      { name = "CLOUDFLARE_API_TOKEN", value = aws_ssm_parameter.cloudflare_token["rw"].name, type = "PARAMETER_STORE" },
+    ]
     sonar = [
       { name = "SONAR_ORGANIZATION", value = var.sonar_organization, type = "PLAINTEXT" },
       { name = "SONAR_PROJECT_KEY", value = var.sonar_project_key, type = "PLAINTEXT" },

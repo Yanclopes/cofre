@@ -9,6 +9,7 @@ resource "aws_s3_bucket" "audit" {
   #checkov:skip=CKV_AWS_18:Este é o próprio bucket de destino dos logs de auditoria
   bucket              = "${local.name}-auditoria-${local.account_id}"
   object_lock_enabled = true
+  force_destroy       = var.audit_force_destroy
 }
 
 resource "aws_s3_bucket_versioning" "audit" {

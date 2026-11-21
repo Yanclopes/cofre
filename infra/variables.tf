@@ -10,10 +10,13 @@ variable "environment" {
   default     = "prod"
 }
 
+# us-east-2 (Ohio) e não sa-east-1 (São Paulo): as SCPs da organização que hospeda a conta
+# negam todas as regiões exceto us-east-2. O efeito colateral é positivo no custo — Ohio é
+# ~30% mais barata —, mas os dados passam a residir fora do Brasil. Ver docs/arquitetura.md.
 variable "region" {
   description = "Região principal."
   type        = string
-  default     = "sa-east-1"
+  default     = "us-east-2"
 }
 
 # ------------------------------------------------------------------ domínio
@@ -22,8 +25,10 @@ variable "domain_name" {
   type        = string
 }
 
-variable "hosted_zone_id" {
-  description = "ID da hosted zone do Route 53 que contém o domínio."
+# O DNS fica na Cloudflare (o registro do domínio obriga o uso dos nameservers dela).
+# O ID da zona aparece no painel da Cloudflare, em Overview > API > Zone ID.
+variable "cloudflare_zone_id" {
+  description = "ID da zona da Cloudflare que contém o domínio."
   type        = string
 }
 
@@ -41,6 +46,16 @@ variable "single_nat_gateway" {
 }
 
 # ------------------------------------------------------------------ aplicação
+# Os endpoints de interface são o item mais caro da arquitetura (9 serviços x 2 AZs,
+# cobrados por hora por ENI). Com true, ficam só os três do Session Manager, que não
+# têm substituto: o resto do tráfego para a AWS sai pelo NAT, ainda sem passar por
+# endereço público da aplicação. Mantenha false em produção.
+variable "minimal_vpc_endpoints" {
+  description = "true = só os endpoints do Session Manager (laboratório, mais barato); false = todos (produção)."
+  type        = bool
+  default     = false
+}
+
 variable "app_port" {
   description = "Porta em que a API NestJS escuta nas EC2."
   type        = number
@@ -77,6 +92,14 @@ variable "db_instance_class" {
 variable "db_multi_az" {
   type    = bool
   default = true
+}
+
+# O plano gratuito da AWS limita a retenção de backup do RDS; o apply de 21/11/2026 foi
+# recusado com FreeTierRestrictionError usando os 7 dias de produção.
+variable "db_backup_retention_days" {
+  description = "Dias de retenção dos backups automáticos do RDS."
+  type        = number
+  default     = 7
 }
 
 variable "db_deletion_protection" {
@@ -121,6 +144,15 @@ variable "audit_object_lock_mode" {
   }
 }
 
+# Só para laboratório: permite que o terraform destroy apague os logs ainda sob
+# Object Lock em modo GOVERNANCE. Em COMPLIANCE nem isso funciona, e é justamente
+# essa a garantia que o trabalho demonstra. Nunca true em produção.
+variable "audit_force_destroy" {
+  description = "true = o destroy esvazia o bucket de auditoria (ignora a retenção GOVERNANCE)."
+  type        = bool
+  default     = false
+}
+
 variable "enable_guardduty" {
   description = "false se a conta já tiver o GuardDuty ligado por outro meio."
   type        = bool
@@ -154,10 +186,12 @@ variable "state_bucket" {
   type        = string
 }
 
+# Precisa ser >= a versão usada no primeiro apply: um state escrito por uma versão
+# mais nova é recusado por uma mais antiga, e a pipeline quebraria no TerraformPlan.
 variable "terraform_version" {
   description = "Versão do Terraform usada na pipeline."
   type        = string
-  default     = "1.10.5"
+  default     = "1.14.9"
 }
 
 variable "enable_sonarcloud" {
