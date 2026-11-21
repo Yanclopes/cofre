@@ -77,10 +77,18 @@ resource "aws_cloudwatch_log_group" "app" {
 
 # ---------------------------------------------------------------- launch template
 resource "aws_launch_template" "app" {
-  name_prefix            = "${local.name}-app-"
-  image_id               = data.aws_ssm_parameter.al2023.value
-  instance_type          = var.instance_type
-  vpc_security_group_ids = [aws_security_group.app.id]
+  name_prefix   = "${local.name}-app-"
+  image_id      = data.aws_ssm_parameter.al2023.value
+  instance_type = var.instance_type
+
+  # Sem endereço público, dito de forma explícita. As instâncias já nascem nas
+  # sub-redes privadas, que não atribuem IP público, mas omitir o argumento deixa
+  # a garantia implícita e invisível para a análise estática (SonarCloud S6329).
+  network_interfaces {
+    associate_public_ip_address = false
+    delete_on_termination       = true
+    security_groups             = [aws_security_group.app.id]
+  }
 
   iam_instance_profile {
     arn = aws_iam_instance_profile.app.arn

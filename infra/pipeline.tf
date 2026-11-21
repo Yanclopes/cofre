@@ -411,12 +411,23 @@ resource "aws_iam_role_policy" "codepipeline" {
         Resource = [for p in aws_codebuild_project.jobs : p.arn]
       },
       {
+        # Restrito à aplicação e ao grupo de implantação deste projeto, em vez de "*"
+        # (SonarCloud S6304): o papel da pipeline não precisa enxergar outros deploys.
         Effect = "Allow"
         Action = [
-          "codedeploy:CreateDeployment", "codedeploy:GetDeployment", "codedeploy:GetDeploymentConfig",
+          "codedeploy:CreateDeployment", "codedeploy:GetDeployment",
           "codedeploy:GetApplication", "codedeploy:GetApplicationRevision", "codedeploy:RegisterApplicationRevision",
         ]
-        Resource = "*"
+        Resource = [
+          aws_codedeploy_app.app.arn,
+          "arn:${local.partition}:codedeploy:${var.region}:${local.account_id}:deploymentgroup:${aws_codedeploy_app.app.name}/*",
+        ]
+      },
+      {
+        # Os perfis de implantação são objetos gerenciados pela AWS (CodeDeployDefault.*).
+        Effect   = "Allow"
+        Action   = ["codedeploy:GetDeploymentConfig"]
+        Resource = "arn:${local.partition}:codedeploy:${var.region}:${local.account_id}:deploymentconfig:*"
       },
       {
         Effect   = "Allow"
