@@ -8,7 +8,7 @@ desenvolvedor, suporte) consegue ler ou recuperar as senhas guardadas.
 |---|---|---|
 | Front-end (criptografia no navegador) | React + Vite + TypeScript, WebCrypto, Argon2id (hash-wasm) | `frontend/` |
 | API (só guarda dados cifrados) | NestJS + TypeORM + PostgreSQL | `backend/` |
-| Infraestrutura | Terraform (AWS provider 5.x) | `infra/` |
+| Infraestrutura | Terraform (AWS provider 5.x, Cloudflare provider 5.x para o DNS) | `infra/` |
 | Pipeline (SAST + Terraform) | CodePipeline, CodeBuild, CodeDeploy | `pipeline/`, `deploy/` |
 
 ---
@@ -47,12 +47,13 @@ userKey = 256 bits aleatórios, gerada no navegador no cadastro
 | Security groups encadeados CloudFront → ALB → App → DB | `infra/security_groups.tf` |
 | VPC Endpoints (sem internet para serviços AWS) | `infra/endpoints.tf` |
 | CloudFront + **AWS WAF** (regras gerenciadas, rate limit, geo) | `infra/cdn_waf.tf` |
+| DNS na Cloudflare (*DNS only*, para o WAF ver o IP real) e certificados ACM | `infra/dns_acm.tf` |
 | ALB só aceita CloudFront + cabeçalho secreto | `infra/alb.tf` |
 | EC2 em Auto Scaling, IMDSv2, sem SSH | `infra/compute.tf`, `infra/templates/user_data.sh.tftpl` |
 | RDS PostgreSQL isolado, TLS obrigatório, senha no Secrets Manager | `infra/rds.tf` |
 | Cognito com MFA obrigatório + WAF próprio no login | `infra/cognito.tf` |
 | KMS com separação de funções (quem administra não usa) | `infra/kms.tf` |
-| CloudTrail → S3 com **Object Lock**, GuardDuty, Security Hub | `infra/audit.tf` |
+| CloudTrail → S3 com **Object Lock**, GuardDuty, Security Hub | `infra/audit.tf` — os dois últimos negados por SCP nesta conta |
 | Alarmes contra ações de administradores (política KMS, trilha, segredo lido por humano…) | `infra/monitoring.tf` |
 | SCP do Organizations (opcional) | `infra/scp.tf` |
 | Pipeline: Source → **SAST** + **Terraform scan** → plan → aprovação → apply → build → deploy | `infra/pipeline.tf`, `pipeline/buildspecs/` |
@@ -97,7 +98,19 @@ cd ../e2e && npm install && npx playwright install chromium && node e2e.mjs
 
 ## 4. Publicar na AWS
 
-Pré-requisitos: conta AWS, um domínio com hosted zone no Route 53, Terraform ≥ 1.10, repositório no GitHub.
+Roteiro completo, com os valores da conta já preenchidos, custo por dia e erros conhecidos:
+[`docs/deploy-aws.md`](docs/deploy-aws.md). O resumo abaixo é o caminho principal.
+
+Pré-requisitos: conta AWS, um domínio com o DNS na Cloudflare (o Terraform cria os registros pelo
+provider `cloudflare/cloudflare`, em modo *DNS only* — ver [`docs/deploy-aws.md`](docs/deploy-aws.md#passo-1--domínio-e-dns-na-cloudflare)),
+Terraform ≥ 1.10 e repositório no GitHub.
+
+> **Estado em 21/11/2026:** o `terraform plan` roda contra a conta real e propõe 149 recursos
+> sem erro. A conta é membro de uma organização administrada pela instituição, cujas SCPs
+> permitem apenas a região **`us-east-2`** (das oito testadas) e negam GuardDuty e Security Hub
+> em todas elas — por isso `region = "us-east-2"` e os dois serviços desligados no `prod.tfvars`.
+> O levantamento e o procedimento de liberação estão em
+> [`docs/liberacao-servicos-aws.md`](docs/liberacao-servicos-aws.md).
 
 1. **Estado do Terraform** (uma vez):
    ```bash
@@ -132,9 +145,15 @@ Pré-requisitos: conta AWS, um domínio com hosted zone no Route 53, Terraform �
 | Deploy | CodeDeploy, 1 instância por vez | health check falha → rollback |
 
 ### Custo
-NAT Gateway, interface endpoints, ALB e RDS Multi-AZ são cobrados por hora mesmo sem uso. Para laboratório, use as
-opções comentadas em `prod.tfvars.example` (um NAT, banco sem Multi-AZ, 1 instância) e destrua tudo depois da apresentação
-(`db_deletion_protection = false`, depois `terraform destroy`). O bucket de auditoria com Object Lock só esvazia ao fim da retenção.
+NAT Gateway, interface endpoints, ALB e RDS Multi-AZ são cobrados por hora mesmo sem uso, e os nove endpoints de
+interface (× 2 AZs) custam mais que o NAT. O `prod.tfvars` deste repositório já vem no perfil de laboratório —
+um NAT, banco em uma AZ, uma instância e `minimal_vpc_endpoints = true`, que deixa só os três endpoints do
+Session Manager: **~US$ 3,70/dia** em `us-east-2`, contra ~US$ 11/dia na configuração fiel ao diagrama.
+Detalhamento item por item em [`docs/deploy-aws.md`](docs/deploy-aws.md#custo).
+
+Para destruir depois da apresentação são necessários `db_deletion_protection = false` e
+`audit_force_destroy = true` (o Object Lock em modo `GOVERNANCE` exige o bypass na remoção);
+em modo `COMPLIANCE` os logs ficam retidos até o fim do prazo, e isso é intencional.
 
 ---
 
@@ -143,10 +162,16 @@ opções comentadas em `prod.tfvars.example` (um NAT, banco sem Multi-AZ, 1 inst
 - `npm test` da API (6 testes) e do front (6 testes de criptografia): passando.
 - Teste E2E no Chrome: cadastro → kit → salvar acessos → bloquear/desbloquear → senha errada recusada → reset de senha → kit errado recusado → recuperação com o kit → auditoria; conferido que o banco **não** contém nenhuma senha em texto puro e que `DELETE` na auditoria é bloqueado.
 - **SAST** (Semgrep, regras TypeScript/JavaScript/segredos): 0 achados bloqueantes.
-- **Checkov** no Terraform: 360 verificações aprovadas, 0 reprovadas. As exceções estão justificadas no próprio recurso (`#checkov:skip=...`).
+- **Checkov** no Terraform: 353 verificações aprovadas, 0 reprovadas, 27 dispensadas (Checkov 3.4.6). As exceções estão justificadas no próprio recurso (`#checkov:skip=...`).
 - Formatação HCL conferida com o formatador oficial (`hclwrite`); argumentos conferidos contra a documentação do provider AWS 5.95.
 - **SonarCloud**: estágio configurado, mas ainda não executado (depende do projeto criado no SonarCloud e do token no SSM).
-- **Não executado aqui:** `terraform validate`/`plan`/`apply` contra uma conta AWS real. O estágio TerraformScan da pipeline roda o `validate`.
+- `terraform validate` e `terraform fmt -check -recursive`: aprovados em `infra/` e em `infra/bootstrap/`
+  (Terraform 1.14.9, provider aws 5.100.0).
+- `terraform plan` contra a conta AWS real: **149 recursos propostos, 0 erros**, com
+  `region = us-east-2` (ver seção 4). O plan destravou um defeito que estava encoberto: a AMI
+  era buscada em `/aws/service/ami-amazon-linux-latest/...`, caminho que responde
+  `ParameterNotFound` nesta conta; passou a vir de `data "aws_ami"` via `ec2:DescribeImages`.
+- **Não executado aqui:** `terraform apply`. Nada foi criado na AWS.
 
 ## 6. Próximos passos possíveis
 - Acesso de emergência (contato de confiança com prazo de espera), compartilhamento de itens entre usuários com chaves públicas (X25519).

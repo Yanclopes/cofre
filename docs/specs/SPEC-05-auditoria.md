@@ -29,6 +29,13 @@ ações perigosas de quem tem acesso à infraestrutura.
 | SEC-06 | SCP opcional impede desligar CloudTrail, GuardDuty e burlar Object Lock | T-02 |
 | SEC-07 | Logs não registram o cabeçalho `authorization` | T-05 |
 
+> **Estado do SEC-05 em 21/11/2026.** GuardDuty e Security Hub estão implementados em
+> `infra/audit.tf`, mas **desligados** (`enable_guardduty = false`, `enable_securityhub = false`)
+> porque as SCPs da organização que hospeda a conta negam os dois serviços em todas as regiões.
+> O requisito permanece coberto em código e volta a valer trocando as duas variáveis quando a
+> restrição sair. A detecção remanescente fica com o SEC-02, o SEC-04 e as Web ACLs do WAF.
+> Levantamento em [`../liberacao-servicos-aws.md`](../liberacao-servicos-aws.md).
+
 ## Ameaças (STRIDE)
 
 | ID | Categoria | Ameaça | Controle |

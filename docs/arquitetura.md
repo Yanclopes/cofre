@@ -1,8 +1,16 @@
 # Arquitetura
 
 O Cofre é um gerenciador de senhas com **conhecimento zero**: toda a criptografia acontece no navegador e a AWS só
-guarda texto cifrado. A infraestrutura roda em `sa-east-1` (São Paulo), numa VPC de três camadas em duas zonas de
+guarda texto cifrado. A infraestrutura roda em `us-east-2` (Ohio), numa VPC de três camadas em duas zonas de
 disponibilidade, com CloudFront + AWS WAF na borda.
+
+> **Sobre a região.** O projeto foi desenhado para `sa-east-1` (São Paulo), por latência e por manter os dados no
+> Brasil. A conta disponibilizada para o trabalho, porém, é membro de uma organização cujas Service Control Policies
+> permitem apenas `us-east-2` — das oito regiões testadas, só ela respondeu. A premissa de segurança não é afetada,
+> porque o servidor nunca vê texto em claro: o que reside fora do país é cofre cifrado, cuja chave só existe no
+> navegador do usuário. O que muda é a latência e o enquadramento legal da hospedagem. O levantamento está em
+> [liberacao-servicos-aws.md](liberacao-servicos-aws.md), e voltar para São Paulo é trocar uma linha no
+> `prod.tfvars` quando a restrição sair.
 
 ![Arquitetura AWS](arquitetura-aws.png)
 
@@ -12,7 +20,7 @@ disponibilidade, com CloudFront + AWS WAF na borda.
 
 ```mermaid
 flowchart LR
-    U([Usuário<br/>navegador cifra os dados]) -->|DNS| R53[Route 53]
+    U([Usuário<br/>navegador cifra os dados]) -->|DNS| CFL[Cloudflare DNS<br/>DNS only, sem proxy]
     U -->|HTTPS| CF[CloudFront]
     CF --- WAF{{AWS WAF<br/>Web ACL}}
     U -->|login SRP + MFA| COG[Cognito]
@@ -68,7 +76,10 @@ flowchart LR
 ## Fluxo de uma requisição
 
 1. O navegador deriva as chaves da senha mestra (Argon2id, 64 MiB, 3 iterações) e cifra cada item com AES-256-GCM.
-2. O Route 53 resolve o domínio para a CloudFront.
+2. A Cloudflare, que é o DNS autoritativo do domínio, resolve o nome para a CloudFront. O
+   registro fica em modo *DNS only*: se o proxy dela estivesse ligado, a CloudFront veria o
+   IP da Cloudflare no lugar do IP do visitante, e as regras de WAF de bloqueio geográfico e
+   de limite por IP perderiam sentido.
 3. A CloudFront termina o TLS e o WAF inspeciona a requisição. O Shield Standard cobre DDoS de camadas 3 e 4.
 4. A CloudFront encaminha ao ALB injetando o cabeçalho secreto `X-Origin-Verify`; sem ele o ALB responde 403.
 5. O ALB entrega às EC2 (sub-redes privadas), que validam o JWT do Cognito.
@@ -101,7 +112,7 @@ O servidor recebe apenas strings `v1.<iv>.<texto cifrado>` e recusa qualquer out
 | RDS PostgreSQL 16 | `infra/rds.tf` | Sub-rede isolada, `force_ssl`, KMS, senha gerada e rotacionada no Secrets Manager |
 | Cognito | `infra/cognito.tf` | MFA obrigatório (TOTP), senha mínima de 32 caracteres (é derivada) |
 | KMS | `infra/kms.tf` | Chave de dados e chave de operação; quem administra não decifra |
-| Auditoria | `infra/audit.tf` | CloudTrail em S3 com Object Lock; GuardDuty; Security Hub (FSBP) |
+| Auditoria | `infra/audit.tf` | CloudTrail em S3 com Object Lock; GuardDuty e Security Hub (FSBP), estes dois desligados na conta atual porque a SCP da organização os nega — ver [liberacao-servicos-aws.md](liberacao-servicos-aws.md) |
 | Monitoramento | `infra/monitoring.tf` | Alarmes: política KMS alterada, trilha alterada, segredo lido por humano, uso do root, login sem MFA, SG/NACL alterado fora da pipeline, 5xx no ALB |
 | SCP (opcional) | `infra/scp.tf` | Impede desligar auditoria/detecção e burlar Object Lock |
 

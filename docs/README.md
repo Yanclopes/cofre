@@ -10,5 +10,7 @@ Documentação de arquitetura e segurança do trabalho de Auditoria e Segurança
 | [pipeline-devsecops.md](pipeline-devsecops.md) | CodePipeline, SAST (Semgrep e SonarCloud), Checkov, aprovação e deploy |
 | [specs/](specs/README.md) | Processo SDD e especificações de segurança por funcionalidade |
 | [rastreabilidade.md](rastreabilidade.md) | Requisito do enunciado → evidência no repositório |
+| [deploy-aws.md](deploy-aws.md) | Roteiro de publicação na AWS, custos por dia e erros conhecidos |
+| [liberacao-servicos-aws.md](liberacao-servicos-aws.md) | Serviços negados pelas SCPs da organização e pedido de liberação |
 
 Diagrama: [`arquitetura-aws.png`](arquitetura-aws.png) · [`arquitetura-aws.svg`](arquitetura-aws.svg) · fonte editável [`arquitetura-aws.drawio`](arquitetura-aws.drawio).
